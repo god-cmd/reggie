@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/category")
@@ -31,6 +33,16 @@ public class CategoryController {
         wrapper.orderByAsc("sort");
         categoryService.page(pageInfo,wrapper);
         return R.success(pageInfo);
+    }
+
+    @GetMapping("/list")
+    public R<List<Category>> list(Category category){
+        QueryWrapper<Category> wrapper = new QueryWrapper<>();
+        Integer type = category.getType();
+        wrapper.eq(type!=null,"type",type)
+                .orderByAsc("sort").orderByDesc("update_time");
+        List<Category> list = categoryService.list(wrapper);
+        return R.success(list);
     }
 
     @PostMapping

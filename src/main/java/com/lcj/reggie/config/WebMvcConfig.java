@@ -40,7 +40,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "/employee/login",
                 "/employee/logout",
                 "/backend/**",
-                "/front/**"
+                "/front/**",
+                "/backend/page/demo/upload.html"
         };
         LoginCheckInterceptor interceptor = new LoginCheckInterceptor();
         registry.addInterceptor(interceptor).addPathPatterns("/**").excludePathPatterns(urls);
