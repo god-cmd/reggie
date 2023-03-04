@@ -12,4 +12,6 @@ import java.util.List;
 @Data
 public class DishDto extends Dish {
     private List<DishFlavor> flavors;
+
+    private String categoryName;
 }

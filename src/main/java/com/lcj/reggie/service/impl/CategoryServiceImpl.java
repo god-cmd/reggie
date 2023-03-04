@@ -13,7 +13,7 @@ import com.lcj.reggie.common.R;
 import com.lcj.reggie.mapper.CategoryMapper;
 import com.lcj.reggie.service.CategoryService;
 import com.lcj.reggie.service.DishService;
-import com.lcj.reggie.service.SetMealService;
+import com.lcj.reggie.service.SetmealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Autowired
     private DishService dishService;
     @Autowired
-    private SetMealService setMealService;
+    private SetmealService setmealService;
 
     public R<String> remove(Long id){
         QueryWrapper<Dish> dishQueryWrapper = new QueryWrapper<>();
@@ -33,7 +33,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         QueryWrapper<Setmeal> setmealQueryWrapper = new QueryWrapper<>();
         setmealQueryWrapper.eq("category_id",id).last("limit 1");
-        Setmeal two = setMealService.getOne(setmealQueryWrapper);
+        Setmeal two = setmealService.getOne(setmealQueryWrapper);
         if(two!=null){
             throw new CustomException("该分类存在关联的套餐，不能删除");
         }

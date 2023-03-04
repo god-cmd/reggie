@@ -5,6 +5,8 @@ package com.lcj.reggie.service;/*
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lcj.reggie.bean.Setmeal;
+import com.lcj.reggie.dto.SetmealDto;
 
-public interface SetMealService extends IService<Setmeal> {
+public interface SetmealService extends IService<Setmeal> {
+    void saveSetmealAndDish(SetmealDto dto);
 }
