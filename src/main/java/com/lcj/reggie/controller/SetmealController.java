@@ -4,6 +4,7 @@ package com.lcj.reggie.controller;/*
 */
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.lcj.reggie.bean.Category;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -36,6 +38,18 @@ public class SetmealController {
     public R<String> save(@RequestBody SetmealDto setmealDto){
         SetmealService.saveSetmealAndDish(setmealDto);
         return R.success("添加成功");
+    }
+
+    @GetMapping("/{id}")
+    public R<SetmealDto> getSetmealById(@PathVariable("id") Long id){
+        SetmealDto setmealDto = SetmealService.getSetmealId(id);
+        return R.success(setmealDto);
+    }
+
+    @PutMapping
+    public R<String> updateSetmeal(@RequestBody SetmealDto setmealDto){
+        SetmealService.updateSetmealAndDish(setmealDto);
+        return R.success("修改成功");
     }
 
     @GetMapping("/page")
@@ -63,5 +77,21 @@ public class SetmealController {
         }
         setmealDtoPage.setRecords(setmealDtoList);
         return R.success(setmealDtoPage);
+    }
+
+    @DeleteMapping
+    public R<String> removeSetmeal(@RequestParam("ids") List<Long> ids){
+        SetmealService.removeSetmealAndDish(ids);
+        return R.success("删除成功");
+    }
+
+    @PostMapping("/status/{status}")
+    public R<String> updateStatus(@PathVariable("status") Integer status,
+                                  @RequestParam("ids") List<Long> ids){
+        UpdateWrapper<Setmeal> setmealUpdateWrapper = new UpdateWrapper<>();
+        setmealUpdateWrapper.set("status",status);
+        setmealUpdateWrapper.in("id",ids);
+        SetmealService.update(setmealUpdateWrapper);
+        return R.success("修改成功");
     }
 }

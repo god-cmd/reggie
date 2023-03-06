@@ -3,9 +3,9 @@ package com.lcj.reggie.config;/*
     @create -
 */
 
-import com.alibaba.fastjson.support.spring.messaging.MappingFastJsonMessageConverter;
 import com.lcj.reggie.common.JacksonObjectMapper;
 import com.lcj.reggie.interceptor.LoginCheckInterceptor;
+import com.lcj.reggie.interceptor.FLoginCheckInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -41,9 +41,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "/employee/logout",
                 "/backend/**",
                 "/front/**",
-                "/backend/page/demo/upload.html"
+                "/user/sendMsg",
+                "/user/login"
         };
-        LoginCheckInterceptor interceptor = new LoginCheckInterceptor();
-        registry.addInterceptor(interceptor).addPathPatterns("/**").excludePathPatterns(urls);
+        LoginCheckInterceptor loginCheckInterceptor = new LoginCheckInterceptor();
+        registry.addInterceptor(loginCheckInterceptor)
+                .addPathPatterns("/**").excludePathPatterns(urls);
     }
 }

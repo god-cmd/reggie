@@ -42,6 +42,7 @@ public class DishController {
     public R<List<Dish>> list(@RequestParam(value = "categoryId",defaultValue = "") Long categoryId,
                               @RequestParam(value = "name",defaultValue = "") String name){
         QueryWrapper<Dish> wrapper = new QueryWrapper<>();
+        wrapper.eq("status",1);
         wrapper.eq(categoryId!=null,"category_id",categoryId);
         wrapper.like(Strings.isNotEmpty(name),"name",name);
         List<Dish> list = dishService.list(wrapper);
@@ -64,14 +65,7 @@ public class DishController {
     @PostMapping("/status/{status}")
     public R<String> updateDishStatus(@PathVariable("status") Integer status,
                                       @RequestParam("ids") List<Long> ids){
-        List<Dish> list = new ArrayList<>();
-        for (Long id : ids) {
-            Dish dish = new Dish();
-            dish.setId(id);
-            dish.setStatus(status);
-            list.add(dish);
-        }
-        dishService.updateBatchById(list);
+        dishService.updateStatus(status,ids);
         return R.success("修改成功");
     }
 
