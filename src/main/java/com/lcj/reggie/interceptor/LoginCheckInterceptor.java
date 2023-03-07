@@ -25,7 +25,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         String referer = request.getHeader("Referer");
 
         if(referer==null){
-            log.info("requsetUrl:{}",request.getRemoteAddr());
             return false;
         }
 

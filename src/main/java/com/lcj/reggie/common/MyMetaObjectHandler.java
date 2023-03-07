@@ -23,9 +23,10 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         Long currentId = BaseContext.getCurrentId();
         log.info("正在插入的对象：{}",metaObject.toString());
         metaObject.setValue("createTime",LocalDateTime.now());
-        metaObject.setValue("createUser",currentId);
-        metaObject.setValue("updateTime", LocalDateTime.now());
-        metaObject.setValue("updateUser",currentId);
+//        metaObject.setValue("createUser",currentId);
+        this.strictInsertFill(metaObject,"createUser",Long.class,currentId);
+        this.strictInsertFill(metaObject,"updateTime",LocalDateTime.class,LocalDateTime.now());
+        this.strictInsertFill(metaObject,"updateUser",Long.class,currentId);
     }
 
     @Override

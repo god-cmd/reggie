@@ -7,10 +7,7 @@ import com.lcj.reggie.common.R;
 import com.lcj.reggie.service.ShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +25,15 @@ public class ShoppingCartController {
         shoppingCartQueryWrapper.eq("user_id",userId);
         List<ShoppingCart> list = shoppingCartService.list(shoppingCartQueryWrapper);
         return R.success(list);
+    }
+
+    @PostMapping("/add")
+    public R<String> add(@RequestBody ShoppingCart cart){
+        log.info("cart:{}",cart);
+        Long userId = BaseContext.getCurrentId();
+        cart.setUserId(userId);
+        shoppingCartService.save(cart);
+        return R.success("添加成功");
     }
 
 }
