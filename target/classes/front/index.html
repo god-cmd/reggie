@@ -274,6 +274,7 @@
               let price = 0
               this.cartData.forEach(item=>{
                 price += (item.number * item.amount)
+                // price = item.amount;
               })
               return price
             }

@@ -14,4 +14,6 @@ public class DishDto extends Dish {
     private List<DishFlavor> flavors;
 
     private String categoryName;
+
+    private Integer saleNum;
 }

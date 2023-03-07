@@ -1,5 +1,6 @@
 package com.lcj.reggie.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.lcj.reggie.bean.AddressBook;
@@ -8,6 +9,7 @@ import com.lcj.reggie.common.R;
 import com.lcj.reggie.service.AddressBookService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.extern.slf4j.XSlf4j;
+import org.apache.tomcat.jni.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,14 @@ public class AddressBookController {
     @PostMapping
     public R<String> save(@RequestBody AddressBook addressBook){
         Long userId = BaseContext.getCurrentId();
+        QueryWrapper<AddressBook> addressBookQueryWrapper = new QueryWrapper<>();
+        addressBookQueryWrapper.eq("user_id",userId);
+        List<AddressBook> list = addressBookService.list(addressBookQueryWrapper);
+
+        if(list.size()==0){
+            addressBook.setIsDefault(1);
+        }
+
         addressBook.setUserId(userId);
         addressBookService.save(addressBook);
         return R.success("添加成功");
@@ -62,6 +72,20 @@ public class AddressBookController {
         addressBook.setIsDefault(1);
         addressBookService.updateById(addressBook);
         return R.success("设置成功");
+    }
+
+    @GetMapping("/default")
+    public R<AddressBook> getDefaultAddress(){
+        Long userId = BaseContext.getCurrentId();
+
+        QueryWrapper<AddressBook> addressBookQueryWrapper = new QueryWrapper<>();
+        addressBookQueryWrapper.eq("user_id",userId);
+        addressBookQueryWrapper.eq("is_default",1);
+        AddressBook defaultAddress = addressBookService.getOne(addressBookQueryWrapper);
+        if(defaultAddress==null){
+            return R.error("没有设置默认地址");
+        }
+        return R.success(defaultAddress);
     }
 
     @DeleteMapping
