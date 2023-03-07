@@ -22,14 +22,14 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
         Object employee = session.getAttribute("employee");
-        String referer = request.getHeader("referer");
-
+        String referer = request.getHeader("Referer");
+        log.info("referer:{}",referer);
         if (employee != null && referer.contains("backend")){
             BaseContext.setCurrentId((Long) employee);
             return true;
         }
         Object user = session.getAttribute("user");
-        if (user != null && referer.contains("front")){
+        if (referer.contains("front") && user != null){
             BaseContext.setCurrentId((Long) user);
             return true;
         }

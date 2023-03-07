@@ -94,4 +94,13 @@ public class SetmealController {
         SetmealService.update(setmealUpdateWrapper);
         return R.success("修改成功");
     }
+
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(@RequestParam("categoryId") Long categoryId,
+                        @RequestParam("status") String status) {
+        QueryWrapper<Setmeal> setmealQueryWrapper = new QueryWrapper<>();
+        setmealQueryWrapper.eq("category_id",categoryId);
+        List<Setmeal> list = SetmealService.list(setmealQueryWrapper);
+        return R.success(list);
+    }
 }

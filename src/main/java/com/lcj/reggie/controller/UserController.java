@@ -35,6 +35,12 @@ public class UserController {
         return R.error("发送失败");
     }
 
+    @PostMapping("loginout")
+    public R<String> logout(HttpSession session){
+        session.removeAttribute("user");
+        return R.success("退出成功");
+    }
+
     @PostMapping("/login")
     public R<User> login(@RequestBody Map map, HttpSession session){
         String phone = map.get("phone").toString();
