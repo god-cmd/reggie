@@ -107,4 +107,6 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         dishUpdateWrapper.in("id", ids);
         update(dishUpdateWrapper);
     }
+
+
 }

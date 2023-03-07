@@ -6,10 +6,8 @@ package com.lcj.reggie.controller;/*
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.lcj.reggie.bean.Category;
 import com.lcj.reggie.bean.Setmeal;
-import com.lcj.reggie.bean.SetmealDish;
 import com.lcj.reggie.common.R;
 import com.lcj.reggie.dto.SetmealDto;
 import com.lcj.reggie.service.CategoryService;
@@ -22,15 +20,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
 @RequestMapping("/setmeal")
 public class SetmealController {
     @Autowired
-    private SetmealService SetmealService;
+    private com.lcj.reggie.service.SetmealService SetmealService;
     @Autowired
     private CategoryService categoryService;
 
@@ -96,10 +92,11 @@ public class SetmealController {
     }
 
     @GetMapping("/list")
-    public R<List<Setmeal>> list(@RequestParam("categoryId") Long categoryId,
-                        @RequestParam("status") String status) {
+    public R<List<Setmeal>> list(Setmeal setmeal) {
         QueryWrapper<Setmeal> setmealQueryWrapper = new QueryWrapper<>();
-        setmealQueryWrapper.eq("category_id",categoryId);
+        setmealQueryWrapper.eq(setmeal.getCategoryId()!=null,"category_id",setmeal.getCategoryId());
+        setmealQueryWrapper.eq(setmeal.getStatus()!=null,"status",setmeal.getStatus());
+        setmealQueryWrapper.orderByDesc("update_time");
         List<Setmeal> list = SetmealService.list(setmealQueryWrapper);
         return R.success(list);
     }

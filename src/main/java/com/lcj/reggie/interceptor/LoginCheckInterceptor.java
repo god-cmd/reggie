@@ -23,7 +23,12 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         Object employee = session.getAttribute("employee");
         String referer = request.getHeader("Referer");
-        log.info("referer:{}",referer);
+
+        if(referer==null){
+            log.info("requsetUrl:{}",request.getRemoteAddr());
+            return false;
+        }
+
         if (employee != null && referer.contains("backend")){
             BaseContext.setCurrentId((Long) employee);
             return true;

@@ -13,12 +13,12 @@ import com.lcj.reggie.dto.DishDto;
 import com.lcj.reggie.service.CategoryService;
 import com.lcj.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import com.lcj.reggie.common.R;
 
@@ -39,14 +39,26 @@ public class DishController {
     private CategoryService categoryService;
 
     @GetMapping("/list")
-    public R<List<Dish>> list(@RequestParam(value = "categoryId",defaultValue = "") Long categoryId,
-                              @RequestParam(value = "name",defaultValue = "") String name){
+    public R<List<DishDto>> list(@RequestParam(value = "categoryId",defaultValue = "") Long categoryId,
+                              @RequestParam(value = "name",defaultValue = "") String name,
+                              @RequestParam(value = "status",defaultValue = "") Integer status){
         QueryWrapper<Dish> wrapper = new QueryWrapper<>();
         wrapper.eq("status",1);
         wrapper.eq(categoryId!=null,"category_id",categoryId);
+        wrapper.eq(status!=null,"status",status);
         wrapper.like(Strings.isNotEmpty(name),"name",name);
         List<Dish> list = dishService.list(wrapper);
-        return R.success(list);
+
+        List<DishDto> dtoList = new ArrayList<>();
+        for (Dish dish : list) {
+            DishDto dishDto = new DishDto();
+            List<DishFlavor> dishFlavorById = dishService.getDishFlavorById(dish.getId());
+            dishDto.setFlavors(dishFlavorById);
+            BeanUtils.copyProperties(dish,dishDto);
+            dtoList.add(dishDto);
+        }
+
+        return R.success(dtoList);
     }
 
     @PostMapping
