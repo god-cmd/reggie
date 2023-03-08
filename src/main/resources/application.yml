@@ -12,6 +12,10 @@ spring:
   servlet:
     multipart:
       max-file-size: 2MB
+  mail:
+    host: smtp.qq.com
+    username: 1920794127@qq.com
+    password: cdarehmmlstmcjfc
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射

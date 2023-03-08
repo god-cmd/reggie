@@ -5,10 +5,12 @@ package com.lcj.reggie.service.impl;/*
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lcj.reggie.bean.*;
 import com.lcj.reggie.common.BaseContext;
 import com.lcj.reggie.common.CustomException;
+import com.lcj.reggie.dto.OrdersDto;
 import com.lcj.reggie.mapper.OrdersMapper;
 import com.lcj.reggie.service.*;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +65,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orders.setNumber(String.valueOf(id));
         orders.setUserName(user.getName());
         orders.setUserId(userId);
-        orders.setStatus(2);
+        orders.setStatus(4);
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
         orders.setOrderTime(LocalDateTime.now());
@@ -94,5 +97,62 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orderDetailService.saveBatch(orderDetailList);
         //清空下单用户的购物车
         shoppingCartService.remove(queryWrapper);
+    }
+
+    @Override
+    public Page<OrdersDto> getUserOrderPage(Integer page, Integer pageSize) {
+
+        Page<Orders> ordersPage = new Page<>(page,pageSize);
+        Page<OrdersDto> ordersDtoPage = new Page<>();
+
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("user_id", BaseContext.getCurrentId());
+        ordersQueryWrapper.orderByDesc("order_time");
+        page(ordersPage,ordersQueryWrapper);
+
+        List<Orders> records = ordersPage.getRecords();
+        List<OrdersDto> ordersDtoList = new ArrayList<>();
+
+        for (Orders record : records) {
+            OrdersDto ordersDto = new OrdersDto();
+            Long orderId = record.getId();
+            QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+            orderDetailQueryWrapper.eq("order_id",orderId);
+            List<OrderDetail> orderDetails = orderDetailService.list(orderDetailQueryWrapper);
+            BeanUtils.copyProperties(record,ordersDto);
+            ordersDto.setSumNum(orderDetails.size());
+            ordersDto.setOrderDetails(orderDetails);
+            ordersDtoList.add(ordersDto);
+        }
+
+        BeanUtils.copyProperties(ordersPage,ordersDtoPage,"records");
+        ordersDtoPage.setRecords(ordersDtoList);
+
+        return ordersDtoPage;
+    }
+
+    @Transactional
+    @Override
+    public void again(Orders orders) {
+        Long ordersId = orders.getId();
+        Orders orders1 = getById(ordersId);
+
+        QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+        orderDetailQueryWrapper.eq("order_id",ordersId);
+        List<OrderDetail> list = orderDetailService.list(orderDetailQueryWrapper);
+
+        long id = IdWorker.getId();
+        orders1.setId(id);
+        orders1.setNumber(String.valueOf(id));
+        orders1.setOrderTime(LocalDateTime.now());
+        orders1.setCheckoutTime(LocalDateTime.now());
+        save(orders1);
+
+        for (OrderDetail orderDetail : list) {
+            orderDetail.setId(null);
+            orderDetail.setOrderId(id);
+        }
+
+        orderDetailService.saveBatch(list);
     }
 }
