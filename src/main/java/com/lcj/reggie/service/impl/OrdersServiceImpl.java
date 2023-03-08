@@ -146,6 +146,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orders1.setNumber(String.valueOf(id));
         orders1.setOrderTime(LocalDateTime.now());
         orders1.setCheckoutTime(LocalDateTime.now());
+        orders1.setStatus(2);
         save(orders1);
 
         for (OrderDetail orderDetail : list) {
