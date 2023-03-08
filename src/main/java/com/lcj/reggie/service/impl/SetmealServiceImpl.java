@@ -3,14 +3,18 @@ package com.lcj.reggie.service.impl;/*
     @create -
 */
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lcj.reggie.bean.Dish;
 import com.lcj.reggie.bean.Setmeal;
 import com.lcj.reggie.bean.SetmealDish;
 import com.lcj.reggie.common.CustomException;
 import com.lcj.reggie.common.R;
+import com.lcj.reggie.dto.SetmealDishDto;
 import com.lcj.reggie.dto.SetmealDto;
 import com.lcj.reggie.mapper.SetmealMapper;
+import com.lcj.reggie.service.DishService;
 import com.lcj.reggie.service.SetmealDishService;
 import com.lcj.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +34,8 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
 
     @Autowired
     private SetmealDishService setmealDishService;
+    @Autowired
+    private DishService dishService;
 
     @Transactional
     @Override
@@ -94,4 +101,23 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         removeByIds(ids);
     }
 
+    @Override
+    public List<SetmealDishDto> getSetmealDishById(Long setmealId) {
+        QueryWrapper<SetmealDish> wrapper = new QueryWrapper<>();
+        wrapper.eq("setmeal_id",setmealId);
+        List<SetmealDish> setmealDishes = setmealDishService.list(wrapper);
+
+        List<SetmealDishDto> setmealDishDtos = new ArrayList<>();
+
+        for (SetmealDish setmealDish : setmealDishes) {
+            SetmealDishDto setmealDishDto = new SetmealDishDto();
+            BeanUtils.copyProperties(setmealDish,setmealDishDto);
+            Long dishId = setmealDish.getDishId();
+            Dish dish = dishService.getById(dishId);
+            setmealDishDto.setImage(dish.getImage());
+            setmealDishDtos.add(setmealDishDto);
+        }
+
+        return setmealDishDtos;
+    }
 }

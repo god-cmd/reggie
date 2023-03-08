@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lcj.reggie.bean.Category;
 import com.lcj.reggie.bean.Setmeal;
+import com.lcj.reggie.bean.SetmealDish;
 import com.lcj.reggie.common.R;
+import com.lcj.reggie.dto.SetmealDishDto;
 import com.lcj.reggie.dto.SetmealDto;
 import com.lcj.reggie.service.CategoryService;
 import com.lcj.reggie.service.SetmealService;
@@ -99,5 +101,11 @@ public class SetmealController {
         setmealQueryWrapper.orderByDesc("update_time");
         List<Setmeal> list = SetmealService.list(setmealQueryWrapper);
         return R.success(list);
+    }
+
+    @GetMapping("/dish/{id}")
+    public R<List<SetmealDishDto>> getSetmealDishes(@PathVariable("id") Long setmealId){
+        List<SetmealDishDto> setmealDishList = SetmealService.getSetmealDishById(setmealId);
+        return R.success(setmealDishList);
     }
 }
